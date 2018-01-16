@@ -1217,9 +1217,6 @@ void fingerprint() {
     memcpy(image + image_len, response + 0x06, response_len - 0x06);
     image_len += response_len - 0x06;
 
-
-
-
     //char packet4[] = { 0x4b, 0x00, 0x00, 0x0b, 0x00, 0x53, 0x74, 0x67, 0x57, 0x69, 0x6e, 0x64, 0x73, 0x6f, 0x72, 0x00 };
     //tls_write(packet4, sizeof(packet4));
     //tls_read(response, &response_len);puts("READ:");print_hex(response, response_len);
@@ -1259,12 +1256,23 @@ void fingerprint() {
 
     if (idProduct != 0x97) {
         printf("total len  %d\n", image_len);
-        writeImage("img.png", 144, 144, image);
-        puts("Image written - img.png, img.raw");
+        char filename[PATH_MAX];
+        static int number_of_img = 0;
 
-        FILE *f = fopen("img.raw", "wb");
+        sprintf(filename, "img %d.raw",number_of_img);
+        FILE *f = fopen(filename, "wb");
         fwrite(image, 144, 144, f);
         fclose(f);
+
+        sprintf(filename, "img %d.png",number_of_img);
+        writeImage(filename, 144, 144, image);
+
+        char msg[80];
+        sprintf(msg, "Image written - img %d.png, img %d.raw",
+                number_of_img, number_of_img);
+        puts(msg);
+
+        ++number_of_img;
     }
     puts("Done");
     if (validated_finger_id != -1) {
