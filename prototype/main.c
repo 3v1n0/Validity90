@@ -62,6 +62,9 @@ void print_hex_gn(byte* data, int len, int sz) {
     for (int i = 0; i < len; i++) {
         if ((i % 16) == 0) {
             if (i != 0) {
+                printf(" | ");
+                for (int j = i-16; j < i; ++j)
+                    printf("%c", isprint(data[j * sz]) ? data[j * sz] : '.');
                 printf("\n");
             }
             printf("%04x ", i);
@@ -69,6 +72,21 @@ void print_hex_gn(byte* data, int len, int sz) {
             printf(" ");
         }
         printf("%02x ", data[i * sz]);
+    }
+
+    if (((len-1) % 16) != 0) {
+        int j;
+        int missing_bytes = (15 - (len-1) % 16);
+        int missing_spaces = missing_bytes * 3 + (missing_bytes >= 8 ? 1 : 0);
+
+        for (int i = 0; i < missing_spaces; ++i)
+            printf(" ");
+
+        printf(" | ");
+
+        for (j = len-1; j > 0 && (j % 16) != 0; --j);
+        for (; j < len; ++j)
+                printf("%c", isprint(data[j * sz]) ? data[j * sz] : '.');
     }
     puts("");
 }
